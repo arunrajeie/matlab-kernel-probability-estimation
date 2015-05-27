@@ -1,5 +1,5 @@
-function [prob, kx, bw, ci, count] = kernel_probability_estimation(Y,X,n,kx,span)
-%KERNEL_PROBABILITY_RATE Yields a kernel probability estimate based on a categorical time series.
+function [prob, kx, bw, ci, count] = kernel_probability_estimate(Y,X,n,kx,span)
+%KERNEL_PROBABILITY_ESTIMATE Yields a kernel probability estimate based on a categorical time series.
 %
 %==Input Parameters==
 %
