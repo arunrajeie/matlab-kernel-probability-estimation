@@ -69,13 +69,13 @@ for c = 1:ops
 	Xc = X(o_c,1);
 	if length(Xc)>1
 		fun = @(a) local_gaussian_cost_function(a,Xc,n,span);
-		bw(c) = fminsearch(fun,(max(X)-min(X)));
+		bw(c) = fminsearch(fun,2.*(max(Xc)-min(Xc)));
 		for i = 1:length(Xc)
 			d = normpdf(kx,Xc(i),bw(c));
 			count(:,c) = count(:,c) + d;
 			count(:,ops+1) = count(:,ops+1) + d.*bw(c).*sqrt(2*pi());
 		end
-	else
+	elseif length(Xc)==1
 		count(:,c) = count(:,c) + 1./(max(X)-min(X));
 		bw(c) = (max(X)-min(X))./sqrt(12);
 	end
