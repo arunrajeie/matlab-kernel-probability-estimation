@@ -39,9 +39,22 @@ for j = 1:3
 		y_t = [y_t;binornd(1,simrate(rdex))];
 		X_t = [X_t;kx(rdex)];
 	end
-	[q{1,j},~,q{2,j}] = kernel_beta_rate(y_t,X_t,sessions,kx);
+	[q{1,j},~,q{2,j}] = kernel_probability_estimate(y_t,X_t,sessions,kx);
 	plot(kx,simrate,kx,q{1,j},kx,q{2,j})
 end
 
+%%
+% Multinomial Demonstration
 
+D = load('rat_transition.csv');
 
+Y = [D(:,2)==2 D(:,2)==3 D(:,2)==4 D(:,2)==5] + 0;
+X = D(:,5);
+sessions = length(unique(D(:,1)));
+span = 0.01;
+q = cell(2,2);
+
+%before
+[q{1,1},~,~,q{2,1}] = kernel_probability_estimate(Y(X<=0,:),X(X<=0),sessions,(-1500:0)',span);
+[q{1,2},~,~,q{2,2}] = kernel_probability_estimate(Y(X>=0,:),X(X>=0),sessions,(0:1500)',span);
+plot((-1500:0),q{1,1},(0:1500),q{1,2});
