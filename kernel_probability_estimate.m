@@ -76,7 +76,7 @@ for c = 1:ops
 			count(:,ops+1) = count(:,ops+1) + d.*bw(c).*sqrt(2*pi());
 		end
 	else
-		count(:,c) = count(:,c) + 1./length(kx);
+		count(:,c) = count(:,c) + 1./(max(kx)-min(kx));
 		bw(c) = (max(kx)-min(kx))./sqrt(12);
 	end
 end
