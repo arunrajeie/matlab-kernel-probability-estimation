@@ -67,17 +67,17 @@ bw = zeros(ops,1);
 for c = 1:ops
 	o_c = find(Y(:,c)==1);
 	Xc = X(o_c,1);
-	if length(Xc)>3
+	if length(Xc)>1
 		fun = @(a) local_gaussian_cost_function(a,Xc,n,span);
-		bw(c) = fminsearch(fun,100);
+		bw(c) = fminsearch(fun,(max(X)-min(X)));
 		for i = 1:length(Xc)
 			d = normpdf(kx,Xc(i),bw(c));
 			count(:,c) = count(:,c) + d;
 			count(:,ops+1) = count(:,ops+1) + d.*bw(c).*sqrt(2*pi());
 		end
 	else
-		count(:,c) = count(:,c) + length(Xc)./(max(kx)-min(kx));
-		bw(c) = (max(kx)-min(kx))./sqrt(12);
+		count(:,c) = count(:,c) + 1./(max(X)-min(X));
+		bw(c) = (max(X)-min(X))./sqrt(12);
 	end
 end
 
