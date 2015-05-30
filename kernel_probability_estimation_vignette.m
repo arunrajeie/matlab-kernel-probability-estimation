@@ -46,15 +46,47 @@ end
 %%
 % Multinomial Demonstration
 
-D = load('rat_transition.csv');
+D = load('rat_choice.csv')';
 
-Y = [D(:,2)==2 D(:,2)==3 D(:,2)==4 D(:,2)==5] + 0;
-X = D(:,5);
-sessions = length(unique(D(:,1)));
-span = 0.01;
-q = cell(2,2);
+Y = [D==0 D==1 D==2 D==3 D==4 D==5 D==6 D==7] + 0;
+X = (1:size(D,1))';
+phase = [0;4624;9756;14303;18692;23907;28111;33142;38164];
+span = 1;
+sched = [
+	0.0422,0.0357,0.0617,0.0552,0.0097,0.0065,0.0227,0.0162;
+	0.0552,0.0162,0.0357,0.0065,0.0617,0.0227,0.0097,0.0442;
+	0.0162,0.0617,0.0097,0.0357,0.0227,0.0552,0.0422,0.0065;
+	0.0617,0.0422,0.0065,0.0162,0.0552,0.0097,0.0357,0.0227;
+	0.0065,0.0097,0.0162,0.0227,0.0357,0.0422,0.0552,0.0617;
+	0.0357,0.0227,0.0552,0.0617,0.0422,0.0162,0.0065,0.0097;
+	0.0227,0.0065,0.0422,0.0097,0.0162,0.0357,0.0617,0.0552;
+	0.0097,0.0552,0.0224,0.0422,0.0065,0.0617,0.0162,0.0357];
 
-%before
-[q{1,1},~,~,q{2,1}] = kernel_probability_estimate(Y(X<=0,:),X(X<=0),sessions,(-1500:0)',span);
-[q{1,2},~,~,q{2,2}] = kernel_probability_estimate(Y(X>=0,:),X(X>=0),sessions,(0:1500)',span);
-plot((-1500:0),q{1,1},(0:1500),q{1,2});
+for i = 1:length(phase)-1
+	kx = (phase(i)+1:phase(i+1))';
+	[q,kx,bw,ci,cnt] = kernel_probability_estimate(Y(kx,:),kx,1,kx,1);
+	qest(kx,:) = q;
+end
+
+subplot(3,1,1)
+plot(X,qest);
+
+bias = geomean(qest);
+qmod = (qest./repmat(bias,38164,1));
+qmod = log(qmod./repmat(geomean(qmod,2),1,8));
+
+subplot(3,1,2)
+plot(X,qmod)
+
+creg = zeros(38164,1);
+warning('off','stats:statrobustfit:IterationLimit')
+for i = 1:length(phase)-1
+kx = (phase(i)+1:phase(i+1))';
+for j = 1:length(kx)
+creg(kx(j)) = robustfit(csched(i,:)',cqmod(kx(j),:)',[],[],'off');
+end
+end
+warning('on','stats:statrobustfit:IterationLimit')
+
+subplot(3,1,3)
+plot(X,creg)
